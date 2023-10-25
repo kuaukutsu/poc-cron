@@ -5,43 +5,24 @@ declare(strict_types=1);
 namespace kuaukutsu\poc\cron;
 
 use Closure;
-use DateTimeInterface;
+use DateTimeImmutable;
+use LogicException;
 
 final class SchedulerTimer
 {
-    private ?DateTimeInterface $timestamp = null;
+    private ?DateTimeImmutable $timestamp = null;
 
     /**
-     * @param Closure(self $self, DateTimeInterface $dateTime): bool $acton
+     * @param Closure(self $self, DateTimeImmutable $dateTime): bool $acton
      */
     private function __construct(private readonly Closure $acton)
     {
     }
 
-    public function run(DateTimeInterface $dateTime): bool
+    public function run(DateTimeImmutable $dateTime): bool
     {
         $action = $this->acton;
         return $action($this, $dateTime);
-    }
-
-    /**
-     * Schedule the command at a given time.
-     *
-     * @param DateTimeInterface $time
-     * @return $this
-     */
-    public function at(DateTimeInterface $time): self
-    {
-        return new self(
-            function (self $self, DateTimeInterface $tick) use ($time): bool {
-                if ($self->timestamp === null && $time->format('YmdHi') === $tick->format('YmdHi')) {
-                    $self->timestamp = $tick;
-                    return true;
-                }
-
-                return false;
-            }
-        );
     }
 
     /**
@@ -53,7 +34,7 @@ final class SchedulerTimer
     public static function everyNHours(int $hours): self
     {
         return new self(
-            function (self $self, DateTimeInterface $tick) use ($hours): bool {
+            function (self $self, DateTimeImmutable $tick) use ($hours): bool {
                 if (
                     $self->timestamp !== null
                     && $self->timestamp->format('YmdH') === $tick->format('YmdH')
@@ -90,7 +71,7 @@ final class SchedulerTimer
     public static function everyNDays(int $days): self
     {
         return new self(
-            function (self $self, DateTimeInterface $tick) use ($days): bool {
+            function (self $self, DateTimeImmutable $tick) use ($days): bool {
                 if (
                     $self->timestamp !== null
                     && $self->timestamp->format('Ymd') === $tick->format('Ymd')
@@ -103,6 +84,43 @@ final class SchedulerTimer
                     && $tick->format('i') === '00'
                     && ((int)$tick->format('j') % $days) === 0
                 ) {
+                    $self->timestamp = $tick;
+                    return true;
+                }
+
+                return false;
+            }
+        );
+    }
+
+    /**
+     * Schedule the event to run daily AT.
+     *
+     * @return $this
+     */
+    public static function everyDayAt(int $hour, int $minute): self
+    {
+        if ($hour > 1 && $hour < 25) {
+            $minute += ($hour * 60);
+        }
+
+        $time = (new DateTimeImmutable('1999-01-01 00:00:01'))
+            ->modify("+$minute minutes");
+
+        if ($time === false) {
+            throw new LogicException('time must implement DateTimeImmutable.');
+        }
+
+        return new self(
+            function (self $self, DateTimeImmutable $tick) use ($time): bool {
+                if (
+                    $self->timestamp !== null
+                    && $self->timestamp->format('YmdHi') === $tick->format('YmdHi')
+                ) {
+                    return false;
+                }
+
+                if ($time->format('Hi') === $tick->format('Hi')) {
                     $self->timestamp = $tick;
                     return true;
                 }
@@ -130,7 +148,7 @@ final class SchedulerTimer
     public static function monthly(): self
     {
         return new self(
-            function (self $self, DateTimeInterface $tick): bool {
+            function (self $self, DateTimeImmutable $tick): bool {
                 if (
                     $self->timestamp !== null
                     && $self->timestamp->format('Ym') === $tick->format('Ym')
@@ -160,7 +178,37 @@ final class SchedulerTimer
     public static function weekdays(): self
     {
         return new self(
-            function (self $self, DateTimeInterface $tick): bool {
+            function (self $self, DateTimeImmutable $tick): bool {
+                if (
+                    $self->timestamp !== null
+                    && $self->timestamp->format('Ymd') === $tick->format('Ymd')
+                ) {
+                    return false;
+                }
+
+                if (
+                    $tick->format('N') < 6
+                    && $tick->format('H') === '00'
+                    && $tick->format('i') === '00'
+                ) {
+                    $self->timestamp = $tick;
+                    return true;
+                }
+
+                return false;
+            }
+        );
+    }
+
+    /**
+     * Schedule the event to run only on weekend.
+     *
+     * @return $this
+     */
+    public static function weekend(): self
+    {
+        return new self(
+            function (self $self, DateTimeImmutable $tick): bool {
                 if (
                     $self->timestamp !== null
                     && $self->timestamp->format('Ymd') === $tick->format('Ymd')
@@ -191,7 +239,7 @@ final class SchedulerTimer
     public static function everyNMinutes(int $minutes): self
     {
         return new self(
-            function (self $self, DateTimeInterface $tick) use ($minutes): bool {
+            function (self $self, DateTimeImmutable $tick) use ($minutes): bool {
                 if (
                     $self->timestamp !== null
                     && $self->timestamp->format('YmdHi') === $tick->format('YmdHi')

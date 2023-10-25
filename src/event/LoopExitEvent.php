@@ -6,6 +6,9 @@ namespace kuaukutsu\poc\cron\event;
 
 use kuaukutsu\poc\cron\EventInterface;
 
+/**
+ * @psalm-immutable
+ */
 final class LoopExitEvent implements EventInterface
 {
     private readonly string $message;

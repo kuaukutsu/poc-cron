@@ -14,6 +14,39 @@ final class SchedulerTimerWeekdaysTest extends TestCase
     {
         $timer = SchedulerTimer::weekdays();
 
+        $tick = new DateTimeImmutable('2023-10-25 00:00:20');
+        self::assertTrue(
+            $timer->run($tick)
+        );
+
+        self::assertFalse(
+            $timer->run($tick->modify('+2 hours'))
+        );
+
+        $tick = new DateTimeImmutable('2023-10-10 00:00:20');
+        self::assertTrue(
+            $timer->run($tick)
+        );
+
+        self::assertTrue(
+            $timer->run($tick->modify('+2 days'))
+        );
+
+        $tick = new DateTimeImmutable('2023-10-14 00:00:20');
+        self::assertFalse(
+            $timer->run($tick)
+        );
+
+        $tick = new DateTimeImmutable('2023-10-15 00:00:20');
+        self::assertFalse(
+            $timer->run($tick)
+        );
+    }
+
+    public function testWeekend(): void
+    {
+        $timer = SchedulerTimer::weekend();
+
         $tick = new DateTimeImmutable('2023-10-25 10:35:20');
         self::assertFalse(
             $timer->run($tick)

@@ -6,6 +6,9 @@ namespace kuaukutsu\poc\cron\event;
 
 use kuaukutsu\poc\cron\EventInterface;
 
+/**
+ * @psalm-immutable
+ */
 final class ProcessBufferEvent implements EventInterface
 {
     public function __construct(private readonly string $buffer)

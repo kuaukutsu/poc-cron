@@ -11,7 +11,7 @@ trait SchedulerPublisherEvent
      */
     private array $eventHandlers = [];
 
-    public function on(EventSubscriberInterface $subscriber): void
+    final public function on(EventSubscriberInterface $subscriber): void
     {
         $subscriberHash = spl_object_id($subscriber);
         foreach ($subscriber->subscriptions() as $name => $callback) {
@@ -19,7 +19,7 @@ trait SchedulerPublisherEvent
         }
     }
 
-    public function off(EventSubscriberInterface $subscriber): void
+    final public function off(EventSubscriberInterface $subscriber): void
     {
         $subscriberHash = spl_object_id($subscriber);
         foreach (SchedulerEvent::cases() as $event) {
@@ -29,7 +29,7 @@ trait SchedulerPublisherEvent
         }
     }
 
-    public function trigger(SchedulerEvent $name, EventInterface $event): void
+    private function trigger(SchedulerEvent $name, EventInterface $event): void
     {
         if (array_key_exists($name->value, $this->eventHandlers)) {
             foreach ($this->eventHandlers[$name->value] as $subscriberCallback) {

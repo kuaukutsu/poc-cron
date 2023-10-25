@@ -7,6 +7,8 @@ namespace kuaukutsu\poc\cron;
 use Symfony\Component\Process\Process;
 
 /**
+ * Wrapper Sympony/Process
+ *
  * @psalm-immutable
  */
 interface ProcessInterface
