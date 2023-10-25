@@ -7,6 +7,9 @@ namespace kuaukutsu\poc\cron\event;
 use Symfony\Component\Process\Process;
 use kuaukutsu\poc\cron\EventInterface;
 
+/**
+ * @psalm-immutable
+ */
 final class ProcessTimeoutEvent implements EventInterface
 {
     public function __construct(
@@ -23,6 +26,7 @@ final class ProcessTimeoutEvent implements EventInterface
 
     public function getCommand(): string
     {
+        /** @psalm-suppress ImpureMethodCall */
         return $this->process->getCommandLine();
     }
 

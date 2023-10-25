@@ -38,4 +38,23 @@ final class SchedulerTimerDayTest extends TestCase
             $timer->run($tick->modify('+1 months'))
         );
     }
+
+    public function testEveryDayAt(): void
+    {
+        $timer = SchedulerTimer::everyDayAt(2, 15);
+
+        $tick = new DateTimeImmutable('2023-10-25 02:15:20');
+        self::assertTrue(
+            $timer->run($tick)
+        );
+
+        self::assertFalse(
+            $timer->run($tick->modify('+20 seconds'))
+        );
+
+        $tick = new DateTimeImmutable('2023-10-28 02:15:35');
+        self::assertTrue(
+            $timer->run($tick)
+        );
+    }
 }

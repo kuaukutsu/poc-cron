@@ -7,6 +7,9 @@ namespace kuaukutsu\poc\cron\event;
 use Symfony\Component\Process\Process;
 use kuaukutsu\poc\cron\EventInterface;
 
+/**
+ * @psalm-immutable
+ */
 final class ProcessEvent implements EventInterface
 {
     private readonly string $message;
@@ -15,16 +18,18 @@ final class ProcessEvent implements EventInterface
         public readonly string $commandId,
         private readonly Process $process,
     ) {
-        $this->message = "[$this->commandId] " . $this->process->getCommandLine();
+        $this->message = "[$this->commandId] " . $this->getCommand();
     }
 
     public function getStatus(): string
     {
+        /** @psalm-suppress ImpureMethodCall */
         return $this->process->getStatus();
     }
 
     public function getCommand(): string
     {
+        /** @psalm-suppress ImpureMethodCall */
         return $this->process->getCommandLine();
     }
 
