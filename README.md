@@ -1,45 +1,53 @@
 # Scheduler (on event loop)
 
+### Get started
+
 ```php
 <?php
 
 declare(strict_types=1);
 
+use kuaukutsu\poc\cron\tools\ProcessDecorator;
 use kuaukutsu\poc\cron\SchedulerCommand;
-use kuaukutsu\poc\cron\SchedulerCommandCollection;
 use kuaukutsu\poc\cron\Scheduler;
-use kuaukutsu\poc\cron\SchedulerOptions;
 use kuaukutsu\poc\cron\SchedulerTimer;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 $scheduler = new Scheduler(
-    new SchedulerCommandCollection(
-        new SchedulerCommand(
-            new PwdProcess(),
-            SchedulerTimer::everyMinute()
-        ),
-        new SchedulerCommand(
-            new SleepProcess(5),
-            SchedulerTimer::everyMinute()
-        ),
-        new SchedulerCommand(
-            new SleepProcess(10),
-            SchedulerTimer::everyMinute()
-        ),
-        new SchedulerCommand(
-            new SleepProcess(25),
-            SchedulerTimer::everyMinute()
-        ),
+    new SchedulerCommand(
+        new ProcessDecorator(['pwd']),
+        SchedulerTimer::everyMinute()
     ),
+    new SchedulerCommand(
+        new ProcessDecorator(['sleep', '10']),
+        SchedulerTimer::everyFiveMinutes()
+    ),
+);
+
+$scheduler->run();
+```
+
+### Custom Options
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use kuaukutsu\poc\cron\Scheduler;
+use kuaukutsu\poc\cron\SchedulerOptions;
+
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+$scheduler = new Scheduler(...);
+$scheduler->run(
     new SchedulerOptions(
-        tack: 30,
+        interval: 30,
         keeperInterval: 5,
         timeout: 86400,
     )
 );
-
-$scheduler->run();
 ```
 
 ### Console Output

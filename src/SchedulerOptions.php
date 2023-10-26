@@ -10,13 +10,13 @@ namespace kuaukutsu\poc\cron;
 final class SchedulerOptions
 {
     /**
-     * @param positive-int $tack in Second
+     * @param positive-int $interval in Second
      * @param positive-int $keeperInterval in Second
      * @param int[] $signalsInterrupt
      * @param positive-int|null $timeout Event Loop Timeout in Second
      */
     public function __construct(
-        private readonly int $tack = 60,
+        private readonly int $interval = 60,
         private readonly int $keeperInterval = 5,
         public readonly array $signalsInterrupt = [SIGHUP, SIGINT, SIGTERM],
         public readonly ?int $timeout = null,
@@ -25,7 +25,7 @@ final class SchedulerOptions
 
     public function getRunnerInterval(): int
     {
-        return max(1, $this->tack);
+        return max(1, $this->interval);
     }
 
     public function getKeeperInterval(): int
