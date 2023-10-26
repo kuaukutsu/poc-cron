@@ -80,6 +80,7 @@ final class Scheduler implements EventPublisherInterface
             foreach ($this->processesActive as $id => $process) {
                 if ($process->isRunning() === false) {
                     $this->processPull($id, $process);
+                    unset($process);
                     continue;
                 }
 
@@ -92,6 +93,7 @@ final class Scheduler implements EventPublisherInterface
                     );
 
                     $this->processPull($id, $process);
+                    unset($process);
                     continue;
                 }
 
@@ -250,12 +252,13 @@ final class Scheduler implements EventPublisherInterface
 
     private function processPull(string $id, Process $process): void
     {
-        unset($this->processesActive[$id]);
+        $process->stop(0);
         $this->trigger(
             SchedulerEvent::ProcessPull,
             new ProcessEvent($id, $process)
         );
 
+        unset($this->processesActive[$id]);
         if ($this->processesActive === []) {
             $this->keeperDisable();
         }
