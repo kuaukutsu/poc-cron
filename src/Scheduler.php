@@ -188,14 +188,14 @@ final class Scheduler implements EventPublisherInterface
         }
 
         foreach ($this->processesActive as $id => $process) {
-            if ($process->isRunning()) {
+            if ($process->isRunning() || $process->isStarted()) {
                 try {
                     $this->trigger(
                         SchedulerEvent::ProcessStop,
                         new ProcessEvent($id, $process)
                     );
 
-                    $process->signal($signal);
+                    $process->stop(5, $signal);
                 } catch (LogicException) {
                     // Cannot send signal on a non-running process.
                 }
