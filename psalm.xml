@@ -19,5 +19,7 @@
         <MixedArrayAccess errorLevel="suppress"/>
         <MixedArrayAssignment errorLevel="suppress"/>
         <UncaughtThrowInGlobalScope errorLevel="info"/>
+        <MixedPropertyTypeCoercion errorLevel="info"/>
+        <StringIncrement errorLevel="info"/>
     </issueHandlers>
 </psalm>
