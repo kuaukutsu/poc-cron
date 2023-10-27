@@ -12,7 +12,7 @@ final class SchedulerOptions
     /**
      * @param positive-int $interval in Second
      * @param positive-int $keeperInterval in Second
-     * @param int[] $signalsInterrupt
+     * @param int[] $signalsInterrupt A POSIX signal
      * @param positive-int|null $timeout Event Loop Timeout in Second
      */
     public function __construct(
