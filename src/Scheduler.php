@@ -121,9 +121,9 @@ final class Scheduler implements EventPublisherInterface
         );
         $this->keeperDisable();
 
-        $this->onSignals($options->signalsInterrupt);
+        $this->onSignals($options->interruptSignals, $options->getInterruptTimeout());
         if ($options->timeout > 0) {
-            $this->onTimeout($options->timeout);
+            $this->onTimeout($options->timeout, $options->getInterruptTimeout());
         }
 
         EventLoop::run();
@@ -133,27 +133,24 @@ final class Scheduler implements EventPublisherInterface
      * @param int[] $signals ext-pcntl
      * @throws UnsupportedFeatureException
      */
-    private function onSignals(array $signals): void
+    private function onSignals(array $signals, float $interruptTimeout): void
     {
         foreach ($signals as $signal) {
-            EventLoop::onSignal($signal, function () use ($signal): void {
-                $this->loopExit($signal);
+            EventLoop::onSignal($signal, function () use ($signal, $interruptTimeout): void {
+                $this->loopExit($signal, $interruptTimeout);
             });
         }
     }
 
-    /**
-     * @param positive-int $timeout
-     */
-    private function onTimeout(int $timeout): void
+    private function onTimeout(float $timeout, float $interruptTimeout): void
     {
-        EventLoop::delay($timeout, function (): void {
+        EventLoop::delay($timeout, function () use ($interruptTimeout): void {
             $this->trigger(
                 SchedulerEvent::LoopTimeout,
                 new LoopTimeoutEvent(new DateTimeImmutable())
             );
 
-            $this->loopExit(SIGTERM);
+            $this->loopExit(SIGTERM, $interruptTimeout);
         });
     }
 
@@ -179,13 +176,16 @@ final class Scheduler implements EventPublisherInterface
         EventLoop::enable($this->keeperId);
     }
 
-    private function loopExit(int $signal): void
+    private function loopExit(int $signal, float $interruptTimeout): void
     {
         if ($this->runnerId === null || $this->keeperId === null) {
             throw new RuntimeException(
                 'A Runner/Keeper identifier that can be used to cancel, enable or disable the callback.'
             );
         }
+
+        EventLoop::cancel($this->runnerId);
+        EventLoop::cancel($this->keeperId);
 
         foreach ($this->processesActive as $id => $process) {
             if ($process->isRunning() || $process->isStarted()) {
@@ -195,7 +195,7 @@ final class Scheduler implements EventPublisherInterface
                         new ProcessEvent($id, $process)
                     );
 
-                    $process->stop(5, $signal);
+                    $process->stop($interruptTimeout, $signal);
                 } catch (LogicException) {
                     // Cannot send signal on a non-running process.
                 }
@@ -206,9 +206,6 @@ final class Scheduler implements EventPublisherInterface
             SchedulerEvent::LoopExit,
             new LoopExitEvent($signal)
         );
-
-        EventLoop::cancel($this->runnerId);
-        EventLoop::cancel($this->keeperId);
 
         exit($signal);
     }
