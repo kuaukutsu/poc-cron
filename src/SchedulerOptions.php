@@ -10,26 +10,33 @@ namespace kuaukutsu\poc\cron;
 final class SchedulerOptions
 {
     /**
-     * @param positive-int $interval in Second
-     * @param positive-int $keeperInterval in Second
-     * @param int[] $signalsInterrupt A POSIX signal
-     * @param positive-int|null $timeout Event Loop Timeout in Second
+     * @param float $interval in Seconds
+     * @param float $keeperInterval in Seconds
+     * @param float|null $timeout Event Loop Timeout in Second
+     * @param int[] $interruptSignals A POSIX signal
+     * @param float $interruptTimeout The timeout in seconds
      */
     public function __construct(
-        private readonly int $interval = 60,
-        private readonly int $keeperInterval = 5,
-        public readonly array $signalsInterrupt = [SIGHUP, SIGINT, SIGTERM],
-        public readonly ?int $timeout = null,
+        private readonly float $interval = 60.,
+        private readonly float $keeperInterval = 5.,
+        public readonly ?float $timeout = null,
+        public readonly array $interruptSignals = [SIGHUP, SIGINT, SIGTERM],
+        private readonly float $interruptTimeout = 10.,
     ) {
     }
 
-    public function getRunnerInterval(): int
+    public function getRunnerInterval(): float
     {
-        return max(1, $this->interval);
+        return max(1., $this->interval);
     }
 
-    public function getKeeperInterval(): int
+    public function getKeeperInterval(): float
     {
-        return max(1, $this->keeperInterval);
+        return max(1., $this->keeperInterval);
+    }
+
+    public function getInterruptTimeout(): float
+    {
+        return max(1., $this->interruptTimeout);
     }
 }
