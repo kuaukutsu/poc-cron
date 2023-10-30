@@ -8,12 +8,12 @@ use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use kuaukutsu\poc\cron\SchedulerTimer;
 
-final class SchedulerTimerDayTest extends TestCase
+final class SchedulerTimerMonthTest extends TestCase
 {
-    public function testDayly(): void
+    public function testMonthly(): void
     {
-        $timer = SchedulerTimer::daily();
-        $tick = new DateTimeImmutable('2023-10-25 00:00:20');
+        $timer = SchedulerTimer::monthly();
+        $tick = new DateTimeImmutable('2023-10-01 00:00:20');
         self::assertTrue(
             $timer->run($tick)
         );
@@ -30,7 +30,7 @@ final class SchedulerTimerDayTest extends TestCase
             $timer->run($tick->modify('+1 hours'))
         );
 
-        self::assertTrue(
+        self::assertFalse(
             $timer->run($tick->modify('+1 days'))
         );
 
@@ -39,10 +39,10 @@ final class SchedulerTimerDayTest extends TestCase
         );
     }
 
-    public function testDailyAt(): void
+    public function testMonthlyAt(): void
     {
-        $timer = SchedulerTimer::dailyAt(2, 15);
-        $tick = new DateTimeImmutable('2023-10-25 02:15:20');
+        $timer = SchedulerTimer::monthlyAt(2, 15);
+        $tick = new DateTimeImmutable('2023-10-01 02:15:20');
         self::assertTrue(
             $timer->run($tick)
         );
@@ -51,13 +51,7 @@ final class SchedulerTimerDayTest extends TestCase
             $timer->run($tick->modify('+20 seconds'))
         );
 
-        $tick = new DateTimeImmutable('2023-10-28 02:15:35');
-        self::assertTrue(
-            $timer->run($tick)
-        );
-
-        $timer = SchedulerTimer::dailyAt(18, 5);
-        $tick = new DateTimeImmutable('2023-10-25 18:05:20');
+        $tick = new DateTimeImmutable('2023-02-01 02:15:35');
         self::assertTrue(
             $timer->run($tick)
         );

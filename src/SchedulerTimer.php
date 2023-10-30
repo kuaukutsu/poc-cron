@@ -63,6 +63,40 @@ final class SchedulerTimer
     }
 
     /**
+     * Schedule the event to run hourly.
+     *
+     * @param positive-int $minute
+     * @return $this
+     */
+    public static function hourlyAt(int $minute): self
+    {
+        $time = (new DateTimeImmutable('1999-01-01 00:00:01'))
+            ->modify("+$minute minutes");
+
+        if ($time === false) {
+            throw new LogicException('time must implement DateTimeImmutable.');
+        }
+
+        return new self(
+            function (self $self, DateTimeImmutable $tick) use ($time): bool {
+                if (
+                    $self->timestamp !== null
+                    && $self->timestamp->format('YmdHi') === $tick->format('YmdHi')
+                ) {
+                    return false;
+                }
+
+                if ($time->format('i') === $tick->format('i')) {
+                    $self->timestamp = $tick;
+                    return true;
+                }
+
+                return false;
+            }
+        );
+    }
+
+    /**
      * Schedule the event to run every N days.
      *
      * @param int $days
@@ -94,18 +128,26 @@ final class SchedulerTimer
     }
 
     /**
-     * Schedule the event to run daily AT.
+     * Schedule the event to run daily.
      *
      * @return $this
      */
-    public static function everyDayAt(int $hour, int $minute): self
+    public static function daily(): self
     {
-        if ($hour > 1 && $hour < 25) {
-            $minute += ($hour * 60);
-        }
+        return self::everyNDays(1);
+    }
 
+    /**
+     * Schedule the event to run daily AT.
+     *
+     * @param positive-int $hour
+     * @param positive-int $minute
+     * @return $this
+     */
+    public static function dailyAt(int $hour, int $minute): self
+    {
         $time = (new DateTimeImmutable('1999-01-01 00:00:01'))
-            ->modify("+$minute minutes");
+            ->modify("+$hour hours $minute minutes");
 
         if ($time === false) {
             throw new LogicException('time must implement DateTimeImmutable.');
@@ -131,16 +173,6 @@ final class SchedulerTimer
     }
 
     /**
-     * Schedule the event to run daily.
-     *
-     * @return $this
-     */
-    public static function daily(): self
-    {
-        return self::everyNDays(1);
-    }
-
-    /**
      * Schedule the event to run monthly.
      *
      * @return $this
@@ -161,6 +193,39 @@ final class SchedulerTimer
                     && $tick->format('H') === '00'
                     && $tick->format('i') === '00'
                 ) {
+                    $self->timestamp = $tick;
+                    return true;
+                }
+
+                return false;
+            }
+        );
+    }
+
+    /**
+     * Schedule the event to run daily AT.
+     *
+     * @return $this
+     */
+    public static function monthlyAt(int $hour, int $minute): self
+    {
+        $time = (new DateTimeImmutable('1999-01-01 00:00:01'))
+            ->modify("+ $hour hours $minute minutes");
+
+        if ($time === false) {
+            throw new LogicException('time must implement DateTimeImmutable.');
+        }
+
+        return new self(
+            function (self $self, DateTimeImmutable $tick) use ($time): bool {
+                if (
+                    $self->timestamp !== null
+                    && $self->timestamp->format('YmdHi') === $tick->format('YmdHi')
+                ) {
+                    return false;
+                }
+
+                if ($time->format('dHi') === $tick->format('dHi')) {
                     $self->timestamp = $tick;
                     return true;
                 }
