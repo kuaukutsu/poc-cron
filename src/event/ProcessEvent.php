@@ -21,15 +21,30 @@ final class ProcessEvent implements EventInterface
         $this->message = "[$this->commandId] " . $this->getCommand();
     }
 
+    /** @psalm-suppress ImpureMethodCall */
     public function getStatus(): string
     {
-        /** @psalm-suppress ImpureMethodCall */
         return $this->process->getStatus();
     }
 
+    /** @psalm-suppress ImpureMethodCall */
+    public function getOutput(): string
+    {
+        if ($this->process->isSuccessful()) {
+            return $this->process->getOutput();
+        }
+
+        $output = $this->process->getOutput();
+        if ($output === '') {
+            $output = $this->process->getErrorOutput();
+        }
+
+        return $output;
+    }
+
+    /** @psalm-suppress ImpureMethodCall */
     public function getCommand(): string
     {
-        /** @psalm-suppress ImpureMethodCall */
         return $this->process->getCommandLine();
     }
 

@@ -19,6 +19,8 @@ final class SchedulerOutput implements EventSubscriberInterface
         }
 
         $subscriptions[SchedulerEvent::ProcessState->value] = $this->traceProcessState(...);
+        $subscriptions[SchedulerEvent::ProcessSuccess->value] = $this->traceProcessSuccess(...);
+        $subscriptions[SchedulerEvent::ProcessError->value] = $this->traceProcessError(...);
 
         /**
          * @var array<class-string<SchedulerEvent>, callable(SchedulerEvent $name, EventInterface $event):void>
@@ -44,6 +46,22 @@ final class SchedulerOutput implements EventSubscriberInterface
     public function traceProcessState(SchedulerEvent $name, ProcessEvent $event): void
     {
         $this->stdout($event->getStatus() . ': ' . $event->getMessage());
+    }
+
+    /**
+     * @noinspection PhpUnusedParameterInspection
+     */
+    public function traceProcessSuccess(SchedulerEvent $name, ProcessEvent $event): void
+    {
+        $this->stdout("success: [$event->commandId] " . $event->getOutput());
+    }
+
+    /**
+     * @noinspection PhpUnusedParameterInspection
+     */
+    public function traceProcessError(SchedulerEvent $name, ProcessEvent $event): void
+    {
+        $this->stdout("error: [$event->commandId] " . $event->getOutput());
     }
 
     private function stdout(string $message): void
