@@ -13,19 +13,19 @@ final class SchedulerCommand
 {
     private readonly string $uuid;
 
-    private readonly Process $proccess;
+    private readonly Process $process;
 
     public function __construct(
-        ProcessInterface $proccess,
+        ProcessInterface $process,
         private readonly SchedulerTimer $timer,
     ) {
-        $this->proccess = $proccess->getProcess();
+        $this->process = $process->getProcess();
 
         /** @psalm-suppress ImpureMethodCall */
         $this->uuid = preg_replace(
             '~^(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})$~',
             '\1-\2-\3-\4-\5',
-            hash('md5', $this->proccess->getCommandLine())
+            hash('md5', $this->process->getCommandLine())
         );
     }
 
@@ -36,7 +36,7 @@ final class SchedulerCommand
 
     public function getProcess(): Process
     {
-        return $this->proccess;
+        return $this->process;
     }
 
     public function getTimer(): SchedulerTimer

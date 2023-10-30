@@ -74,4 +74,39 @@ final class SchedulerTimerHourTest extends TestCase
             $timer->run($tick->modify('+5 days'))
         );
     }
+
+    public function testHourlyAt(): void
+    {
+        $timer = SchedulerTimer::hourlyAt(15);
+        $tick = new DateTimeImmutable('2023-10-25 02:15:20');
+        self::assertTrue(
+            $timer->run($tick)
+        );
+
+        self::assertFalse(
+            $timer->run($tick->modify('+20 seconds'))
+        );
+
+        self::assertFalse(
+            $timer->run($tick->modify('+5 minute'))
+        );
+
+        self::assertTrue(
+            $timer->run($tick->modify('+1 hour'))
+        );
+
+        self::assertTrue(
+            $timer->run($tick->modify('+1 day'))
+        );
+
+        self::assertTrue(
+            $timer->run($tick->modify('+1 month'))
+        );
+
+        $timer = SchedulerTimer::hourlyAt(5);
+        $tick = new DateTimeImmutable('2023-10-25 18:05:20');
+        self::assertTrue(
+            $timer->run($tick)
+        );
+    }
 }
