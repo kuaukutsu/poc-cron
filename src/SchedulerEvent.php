@@ -20,11 +20,11 @@ enum SchedulerEvent: string
 
     case ProcessStop = 'process-stop-event';
 
+    case ProcessSuccess = 'process-success-event';
+
+    case ProcessError = 'process-error-event';
+
     case ProcessState = 'process-state-event';
 
     case ProcessTimeout = 'process-timeout-event';
-
-    case ProcessStdErr = 'process-stderr-event';
-
-    case ProcessStdOut = 'process-stdout-event';
 }

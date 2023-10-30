@@ -16,7 +16,6 @@ use kuaukutsu\poc\cron\event\LoopExitEvent;
 use kuaukutsu\poc\cron\event\LoopTickEvent;
 use kuaukutsu\poc\cron\event\LoopTimeoutEvent;
 use kuaukutsu\poc\cron\event\ProcessEvent;
-use kuaukutsu\poc\cron\event\ProcessBufferEvent;
 use kuaukutsu\poc\cron\event\ProcessTimeoutEvent;
 
 final class Scheduler implements EventPublisherInterface
@@ -66,7 +65,7 @@ final class Scheduler implements EventPublisherInterface
                 }
 
                 $process = $command->getProcess();
-                $process->start($this->handlerProcess());
+                $process->start();
                 $this->processPush($command->getId(), $process);
             }
         };
@@ -79,6 +78,13 @@ final class Scheduler implements EventPublisherInterface
 
             foreach ($this->processesActive as $id => $process) {
                 if ($process->isRunning() === false) {
+                    $this->trigger(
+                        $process->isSuccessful()
+                            ? SchedulerEvent::ProcessSuccess
+                            : SchedulerEvent::ProcessError,
+                        new ProcessEvent($id, $process)
+                    );
+
                     $this->processPull($id, $process);
                     unset($process);
                     continue;
@@ -208,16 +214,6 @@ final class Scheduler implements EventPublisherInterface
         );
 
         exit($signal);
-    }
-
-    private function handlerProcess(): Closure
-    {
-        return function (string $type, string $buffer): void {
-            $this->trigger(
-                $type === Process::ERR ? SchedulerEvent::ProcessStdErr : SchedulerEvent::ProcessStdOut,
-                new ProcessBufferEvent($buffer)
-            );
-        };
     }
 
     private function processExists(string $id): bool

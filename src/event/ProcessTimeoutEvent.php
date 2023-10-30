@@ -24,9 +24,20 @@ final class ProcessTimeoutEvent implements EventInterface
         return Process::STATUS_TERMINATED;
     }
 
+    /** @psalm-suppress ImpureMethodCall */
+    public function getOutput(): string
+    {
+        $output = $this->process->getOutput();
+        if ($output === '') {
+            $output = $this->process->getErrorOutput();
+        }
+
+        return $output;
+    }
+
+    /** @psalm-suppress ImpureMethodCall */
     public function getCommand(): string
     {
-        /** @psalm-suppress ImpureMethodCall */
         return $this->process->getCommandLine();
     }
 
