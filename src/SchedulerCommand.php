@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace kuaukutsu\poc\cron;
 
 use Symfony\Component\Process\Process;
+use kuaukutsu\poc\cron\tools\ProcessUuid;
 
 /**
  * @psalm-immutable
  */
 final class SchedulerCommand
 {
-    private readonly string $uuid;
+    private readonly ProcessUuid $uuid;
 
     private readonly Process $process;
 
@@ -19,19 +20,13 @@ final class SchedulerCommand
         ProcessInterface $process,
         private readonly SchedulerTimer $timer,
     ) {
+        $this->uuid = $process->getUuid();
         $this->process = $process->getProcess();
-
-        /** @psalm-suppress ImpureMethodCall */
-        $this->uuid = preg_replace(
-            '~^(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})$~',
-            '\1-\2-\3-\4-\5',
-            hash('md5', $this->process->getCommandLine())
-        );
     }
 
-    public function getId(): string
+    public function getUuid(): string
     {
-        return $this->uuid;
+        return $this->uuid->toString();
     }
 
     public function getProcess(): Process

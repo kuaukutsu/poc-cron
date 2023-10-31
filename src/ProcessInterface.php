@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace kuaukutsu\poc\cron;
 
 use Symfony\Component\Process\Process;
+use kuaukutsu\poc\cron\tools\ProcessUuid;
 
 /**
  * Wrapper Sympony/Process
@@ -13,7 +14,7 @@ use Symfony\Component\Process\Process;
  */
 interface ProcessInterface
 {
-    public function getName(): string;
+    public function getUuid(): ProcessUuid;
 
     public function getProcess(): Process;
 }

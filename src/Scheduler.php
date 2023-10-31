@@ -59,14 +59,14 @@ final class Scheduler implements EventPublisherInterface
             foreach ($commands as $command) {
                 if (
                     $command->getTimer()->run($tick) === false
-                    || $this->processExists($command->getId())
+                    || $this->processExists($command->getUuid())
                 ) {
                     continue;
                 }
 
                 $process = $command->getProcess();
                 $process->start();
-                $this->processPush($command->getId(), $process);
+                $this->processPush($command->getUuid(), $process);
             }
         };
 
