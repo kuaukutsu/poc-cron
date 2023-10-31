@@ -61,5 +61,17 @@ final class SchedulerTimerDayTest extends TestCase
         self::assertTrue(
             $timer->run($tick)
         );
+
+        $timer = SchedulerTimer::dailyAt(18);
+        $tick = new DateTimeImmutable('2023-10-25 18:00:20');
+        self::assertTrue(
+            $timer->run($tick)
+        );
+
+        $timer = SchedulerTimer::dailyAt(0, 15);
+        $tick = new DateTimeImmutable('2023-10-25 00:15:20');
+        self::assertTrue(
+            $timer->run($tick)
+        );
     }
 }

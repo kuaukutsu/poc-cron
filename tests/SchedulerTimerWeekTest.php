@@ -5,11 +5,55 @@ declare(strict_types=1);
 namespace kuaukutsu\poc\cron\tests;
 
 use DateTimeImmutable;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use kuaukutsu\poc\cron\SchedulerTimer;
 
-final class SchedulerTimerWeekdaysTest extends TestCase
+final class SchedulerTimerWeekTest extends TestCase
 {
+    public function testWeekly(): void
+    {
+        $timer = SchedulerTimer::weekly(1);
+        $tick = new DateTimeImmutable('last Monday May');
+        self::assertTrue(
+            $timer->run($tick)
+        );
+
+        self::assertFalse(
+            $timer->run($tick)
+        );
+
+        self::assertFalse(
+            $timer->run($tick->modify('+2 minute'))
+        );
+
+        self::assertFalse(
+            $timer->run($tick->modify('+1 hours'))
+        );
+
+        self::assertFalse(
+            $timer->run($tick->modify('+1 days'))
+        );
+
+        self::assertFalse(
+            $timer->run($tick->modify('+1 months'))
+        );
+
+        self::assertTrue(
+            $timer->run($tick->modify('+21 days'))
+        );
+
+        $tick = new DateTimeImmutable('last Thursday');
+        self::assertTrue(
+            SchedulerTimer::weekly(4)->run($tick)
+        );
+
+        $tick = new DateTimeImmutable('last Friday');
+        self::assertTrue(
+            SchedulerTimer::weekly(5)->run($tick)
+        );
+    }
+
     public function testWeekdays(): void
     {
         $timer = SchedulerTimer::weekdays();
@@ -73,5 +117,19 @@ final class SchedulerTimerWeekdaysTest extends TestCase
         self::assertFalse(
             $timer->run($tick->modify('+1 days'))
         );
+    }
+
+    public function testWeeklyLessAssert(): void
+    {
+        $this->expectException(LogicException::class);
+
+        SchedulerTimer::weekly(0);
+    }
+
+    public function testWeeklyGreatAssert(): void
+    {
+        $this->expectException(LogicException::class);
+
+        SchedulerTimer::weekly(8);
     }
 }
