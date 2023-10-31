@@ -28,11 +28,13 @@ final class SchedulerTimer
     /**
      * Schedule the event to run every N hours.
      *
-     * @param int $hours
+     * @param positive-int $hours
      * @return $this
      */
     public static function everyNHours(int $hours): self
     {
+        self::assertEveryHour($hours);
+
         return new self(
             function (self $self, DateTimeImmutable $tick) use ($hours): bool {
                 if (
@@ -65,11 +67,13 @@ final class SchedulerTimer
     /**
      * Schedule the event to run hourly.
      *
-     * @param positive-int $minute
+     * @param int $minute 0-59
      * @return $this
      */
     public static function hourlyAt(int $minute): self
     {
+        self::assertMinute($minute);
+
         $time = (new DateTimeImmutable('1999-01-01 00:00:01'))
             ->modify("+$minute minutes");
 
@@ -104,6 +108,8 @@ final class SchedulerTimer
      */
     public static function everyNDays(int $days): self
     {
+        self::assertDay($days);
+
         return new self(
             function (self $self, DateTimeImmutable $tick) use ($days): bool {
                 if (
@@ -140,12 +146,15 @@ final class SchedulerTimer
     /**
      * Schedule the event to run daily AT.
      *
-     * @param positive-int $hour
-     * @param positive-int $minute
+     * @param int $hour 0 - 23
+     * @param int $minute 0 - 59
      * @return $this
      */
-    public static function dailyAt(int $hour, int $minute): self
+    public static function dailyAt(int $hour, int $minute = 0): self
     {
+        self::assertHour($hour);
+        self::assertMinute($minute);
+
         $time = (new DateTimeImmutable('1999-01-01 00:00:01'))
             ->modify("+$hour hours $minute minutes");
 
@@ -209,6 +218,9 @@ final class SchedulerTimer
      */
     public static function monthlyAt(int $hour, int $minute): self
     {
+        self::assertHour($hour);
+        self::assertMinute($minute);
+
         $time = (new DateTimeImmutable('1999-01-01 00:00:01'))
             ->modify("+ $hour hours $minute minutes");
 
@@ -226,6 +238,39 @@ final class SchedulerTimer
                 }
 
                 if ($time->format('dHi') === $tick->format('dHi')) {
+                    $self->timestamp = $tick;
+                    return true;
+                }
+
+                return false;
+            }
+        );
+    }
+
+    /**
+     * Schedule the event to run only on weekly.
+     *
+     * @param int $day ISO 8601 numeric representation of the day of the week. 1 (for Monday) through 7 (for Sunday)
+     * @return $this
+     */
+    public static function weekly(int $day = 7): self
+    {
+        self::assertDayOfWeek($day);
+
+        return new self(
+            function (self $self, DateTimeImmutable $tick) use ($day): bool {
+                if (
+                    $self->timestamp !== null
+                    && $self->timestamp->format('Ymd') === $tick->format('Ymd')
+                ) {
+                    return false;
+                }
+
+                if (
+                    (int)$tick->format('N') === $day
+                    && $tick->format('H') === '00'
+                    && $tick->format('i') === '00'
+                ) {
                     $self->timestamp = $tick;
                     return true;
                 }
@@ -303,6 +348,8 @@ final class SchedulerTimer
      */
     public static function everyNMinutes(int $minutes): self
     {
+        self::assertEveryMinute($minutes);
+
         return new self(
             function (self $self, DateTimeImmutable $tick) use ($minutes): bool {
                 if (
@@ -350,5 +397,47 @@ final class SchedulerTimer
     public static function everyTenMinutes(): self
     {
         return self::everyNMinutes(10);
+    }
+
+    private static function assertMinute(int $value): void
+    {
+        if ($value < 0 || $value > 59) {
+            throw new LogicException('Minute must be in the range from 1 to 59');
+        }
+    }
+
+    private static function assertEveryMinute(int $value): void
+    {
+        if ($value < 1 || $value > 55) {
+            throw new LogicException('Minute must be in the range from 1 to 55');
+        }
+    }
+
+    private static function assertHour(int $value): void
+    {
+        if ($value < 0 || $value > 23) {
+            throw new LogicException('Hour must be in the range from 1 to 23');
+        }
+    }
+
+    private static function assertEveryHour(int $value): void
+    {
+        if ($value < 1 || $value > 23) {
+            throw new LogicException('Hour must be in the range from 1 to 23');
+        }
+    }
+
+    private static function assertDay(int $value): void
+    {
+        if ($value < 1 || $value > 31) {
+            throw new LogicException('Day must be in the range from 1 to 31');
+        }
+    }
+
+    private static function assertDayOfWeek(int $value): void
+    {
+        if ($value < 1 || $value > 7) {
+            throw new LogicException('Day of the Week must be in the range from 1 (for Monday) to 7 (for Sunday)');
+        }
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace kuaukutsu\poc\cron\tests;
 
 use DateTimeImmutable;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use kuaukutsu\poc\cron\SchedulerTimer;
 
@@ -108,5 +109,33 @@ final class SchedulerTimerHourTest extends TestCase
         self::assertTrue(
             $timer->run($tick)
         );
+    }
+
+    public function testEveryHoursLessAssert(): void
+    {
+        $this->expectException(LogicException::class);
+
+        SchedulerTimer::everyNHours(-1);
+    }
+
+    public function testEveryHoursGraetAssert(): void
+    {
+        $this->expectException(LogicException::class);
+
+        SchedulerTimer::everyNHours(24);
+    }
+
+    public function testHourlyAtLessAssert(): void
+    {
+        $this->expectException(LogicException::class);
+
+        SchedulerTimer::hourlyAt(-1);
+    }
+
+    public function testHourlyAtGreatAssert(): void
+    {
+        $this->expectException(LogicException::class);
+
+        SchedulerTimer::hourlyAt(60);
     }
 }
