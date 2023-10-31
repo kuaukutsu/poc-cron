@@ -12,6 +12,8 @@ use kuaukutsu\poc\cron\ProcessInterface;
  */
 final class ProcessDecorator implements ProcessInterface
 {
+    private readonly ProcessUuid $uuid;
+
     private readonly Process $process;
 
     public function __construct(
@@ -26,12 +28,18 @@ final class ProcessDecorator implements ProcessInterface
             null,
             $this->timeout,
         );
+
+        /**
+         * @var non-empty-string $commandLine
+         * @psalm-suppress ImpureMethodCall
+         */
+        $commandLine = $this->process->getCommandLine();
+        $this->uuid = new ProcessUuid($commandLine);
     }
 
-    public function getName(): string
+    public function getUuid(): ProcessUuid
     {
-        /** @psalm-suppress ImpureMethodCall */
-        return $this->process->getCommandLine();
+        return $this->uuid;
     }
 
     public function getProcess(): Process
