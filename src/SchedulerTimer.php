@@ -370,6 +370,58 @@ final class SchedulerTimer
     }
 
     /**
+     * Schedule the event to run every even minutes.
+     *
+     * @return $this
+     */
+    public static function everyEvenMinutes(): self
+    {
+        return new self(
+            function (self $self, DateTimeImmutable $tick): bool {
+                if (
+                    $self->timestamp !== null
+                    && $self->timestamp->format('YmdHi') === $tick->format('YmdHi')
+                ) {
+                    return false;
+                }
+
+                if (((int)$tick->format('i') % 2) === 0) {
+                    $self->timestamp = $tick;
+                    return true;
+                }
+
+                return false;
+            }
+        );
+    }
+
+    /**
+     * Schedule the event to run every doo minutes.
+     *
+     * @return $this
+     */
+    public static function everyOddMinutes(): self
+    {
+        return new self(
+            function (self $self, DateTimeImmutable $tick): bool {
+                if (
+                    $self->timestamp !== null
+                    && $self->timestamp->format('YmdHi') === $tick->format('YmdHi')
+                ) {
+                    return false;
+                }
+
+                if (((int)$tick->format('i') % 2) > 0) {
+                    $self->timestamp = $tick;
+                    return true;
+                }
+
+                return false;
+            }
+        );
+    }
+
+    /**
      * Schedule the event to run every minute.
      *
      * @return $this
