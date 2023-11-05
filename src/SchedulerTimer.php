@@ -37,10 +37,7 @@ final class SchedulerTimer
 
         return new self(
             function (self $self, DateTimeImmutable $tick) use ($hours): bool {
-                if (
-                    $self->timestamp !== null
-                    && $self->timestamp->format('YmdH') === $tick->format('YmdH')
-                ) {
+                if ($self->timestamp?->format('YmdH') === $tick->format('YmdH')) {
                     return false;
                 }
 
@@ -83,10 +80,7 @@ final class SchedulerTimer
 
         return new self(
             function (self $self, DateTimeImmutable $tick) use ($time): bool {
-                if (
-                    $self->timestamp !== null
-                    && $self->timestamp->format('YmdHi') === $tick->format('YmdHi')
-                ) {
+                if ($self->timestamp?->format('YmdHi') === $tick->format('YmdHi')) {
                     return false;
                 }
 
@@ -112,16 +106,12 @@ final class SchedulerTimer
 
         return new self(
             function (self $self, DateTimeImmutable $tick) use ($days): bool {
-                if (
-                    $self->timestamp !== null
-                    && $self->timestamp->format('Ymd') === $tick->format('Ymd')
-                ) {
+                if ($self->timestamp?->format('Ymd') === $tick->format('Ymd')) {
                     return false;
                 }
 
                 if (
-                    $tick->format('H') === '00'
-                    && $tick->format('i') === '00'
+                    $tick->format('Hi') === '0000'
                     && ((int)$tick->format('j') % $days) === 0
                 ) {
                     $self->timestamp = $tick;
@@ -164,10 +154,7 @@ final class SchedulerTimer
 
         return new self(
             function (self $self, DateTimeImmutable $tick) use ($time): bool {
-                if (
-                    $self->timestamp !== null
-                    && $self->timestamp->format('YmdHi') === $tick->format('YmdHi')
-                ) {
+                if ($self->timestamp?->format('YmdHi') === $tick->format('YmdHi')) {
                     return false;
                 }
 
@@ -190,18 +177,11 @@ final class SchedulerTimer
     {
         return new self(
             function (self $self, DateTimeImmutable $tick): bool {
-                if (
-                    $self->timestamp !== null
-                    && $self->timestamp->format('Ym') === $tick->format('Ym')
-                ) {
+                if ($self->timestamp?->format('Ym') === $tick->format('Ym')) {
                     return false;
                 }
 
-                if (
-                    $tick->format('d') === '01'
-                    && $tick->format('H') === '00'
-                    && $tick->format('i') === '00'
-                ) {
+                if ($tick->format('dHi') === '010000') {
                     $self->timestamp = $tick;
                     return true;
                 }
@@ -230,10 +210,7 @@ final class SchedulerTimer
 
         return new self(
             function (self $self, DateTimeImmutable $tick) use ($time): bool {
-                if (
-                    $self->timestamp !== null
-                    && $self->timestamp->format('YmdHi') === $tick->format('YmdHi')
-                ) {
+                if ($self->timestamp?->format('YmdHi') === $tick->format('YmdHi')) {
                     return false;
                 }
 
@@ -259,18 +236,11 @@ final class SchedulerTimer
 
         return new self(
             function (self $self, DateTimeImmutable $tick) use ($day): bool {
-                if (
-                    $self->timestamp !== null
-                    && $self->timestamp->format('Ymd') === $tick->format('Ymd')
-                ) {
+                if ($self->timestamp?->format('Ymd') === $tick->format('Ymd')) {
                     return false;
                 }
 
-                if (
-                    (int)$tick->format('N') === $day
-                    && $tick->format('H') === '00'
-                    && $tick->format('i') === '00'
-                ) {
+                if ($tick->format('NHi') === $day . '0000') {
                     $self->timestamp = $tick;
                     return true;
                 }
@@ -289,18 +259,11 @@ final class SchedulerTimer
     {
         return new self(
             function (self $self, DateTimeImmutable $tick): bool {
-                if (
-                    $self->timestamp !== null
-                    && $self->timestamp->format('Ymd') === $tick->format('Ymd')
-                ) {
+                if ($self->timestamp?->format('Ymd') === $tick->format('Ymd')) {
                     return false;
                 }
 
-                if (
-                    $tick->format('N') < 6
-                    && $tick->format('H') === '00'
-                    && $tick->format('i') === '00'
-                ) {
+                if ($tick->format('N') < 6 && $tick->format('Hi') === '0000') {
                     $self->timestamp = $tick;
                     return true;
                 }
@@ -319,18 +282,11 @@ final class SchedulerTimer
     {
         return new self(
             function (self $self, DateTimeImmutable $tick): bool {
-                if (
-                    $self->timestamp !== null
-                    && $self->timestamp->format('Ymd') === $tick->format('Ymd')
-                ) {
+                if ($self->timestamp?->format('Ymd') === $tick->format('Ymd')) {
                     return false;
                 }
 
-                if (
-                    $tick->format('N') > 5
-                    && $tick->format('H') === '00'
-                    && $tick->format('i') === '00'
-                ) {
+                if ($tick->format('N') > 5 && $tick->format('Hi') === '0000') {
                     $self->timestamp = $tick;
                     return true;
                 }
@@ -352,10 +308,7 @@ final class SchedulerTimer
 
         return new self(
             function (self $self, DateTimeImmutable $tick) use ($minutes): bool {
-                if (
-                    $self->timestamp !== null
-                    && $self->timestamp->format('YmdHi') === $tick->format('YmdHi')
-                ) {
+                if ($self->timestamp?->format('YmdHi') === $tick->format('YmdHi')) {
                     return false;
                 }
 
@@ -378,10 +331,7 @@ final class SchedulerTimer
     {
         return new self(
             function (self $self, DateTimeImmutable $tick): bool {
-                if (
-                    $self->timestamp !== null
-                    && $self->timestamp->format('YmdHi') === $tick->format('YmdHi')
-                ) {
+                if ($self->timestamp?->format('YmdHi') === $tick->format('YmdHi')) {
                     return false;
                 }
 
@@ -404,10 +354,7 @@ final class SchedulerTimer
     {
         return new self(
             function (self $self, DateTimeImmutable $tick): bool {
-                if (
-                    $self->timestamp !== null
-                    && $self->timestamp->format('YmdHi') === $tick->format('YmdHi')
-                ) {
+                if ($self->timestamp?->format('YmdHi') === $tick->format('YmdHi')) {
                     return false;
                 }
 
