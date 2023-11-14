@@ -27,10 +27,10 @@ jobs:
           fail-fast: true
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install composer dependencies
-        uses: ramsey/composer-install@v2
+      - name: Composer install dependencies
+        uses: php-actions/composer@v6
         with:
-          dependency-versions: "highest"
+          args: --ignore-platform-reqs
 
       - name: 'phpcs'
         run: vendor/bin/phpcs

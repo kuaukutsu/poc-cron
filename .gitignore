@@ -35,3 +35,4 @@ phpunit.phar
 
 # coverage
 coverage.clover
+coverage.xml
