@@ -18,6 +18,8 @@ use kuaukutsu\poc\cron\event\LoopTimeoutEvent;
 use kuaukutsu\poc\cron\event\ProcessEvent;
 use kuaukutsu\poc\cron\event\ProcessTimeoutEvent;
 
+use const SIGTERM;
+
 final class Scheduler implements EventPublisherInterface
 {
     use SchedulerPublisherEvent;
