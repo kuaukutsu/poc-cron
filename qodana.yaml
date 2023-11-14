@@ -34,5 +34,6 @@ exclude:
   - name: All
     paths:
       - composer.lock
+      - rector.php
       - techstack.md
       - techstack.yml
