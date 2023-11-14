@@ -23,7 +23,8 @@
     "php": "^8.1",
     "ext-pcntl": "*",
     "revolt/event-loop": "^1.0",
-    "symfony/process": "^6.3"
+    "symfony/process": "^6.3",
+    "symfony/console": "^6.3"
   },
   "require-dev": {
     "vimeo/psalm": "^5.15",

@@ -35,6 +35,3 @@ phpunit.phar
 
 # coverage
 coverage.clover
-
-# runner
-/src/index.php

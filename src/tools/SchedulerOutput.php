@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace kuaukutsu\poc\cron\tools;
 
-use kuaukutsu\poc\cron\SchedulerEvent;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use kuaukutsu\poc\cron\event\ProcessEvent;
+use kuaukutsu\poc\cron\SchedulerEvent;
 use kuaukutsu\poc\cron\EventInterface;
 use kuaukutsu\poc\cron\EventSubscriberInterface;
 
 final class SchedulerOutput implements EventSubscriberInterface
 {
+    public function __construct(
+        private readonly ConsoleOutputInterface $output = new ConsoleOutput(),
+    ) {
+    }
+
     public function subscriptions(): array
     {
         $subscriptions = [];
@@ -66,6 +73,6 @@ final class SchedulerOutput implements EventSubscriberInterface
 
     private function stdout(string $message): void
     {
-        fwrite(STDOUT, $message . PHP_EOL);
+        $this->output->writeln($message);
     }
 }
