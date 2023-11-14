@@ -21,6 +21,11 @@ cli:
 		ghcr.io/kuaukutsu/php:${PHP_VERSION}-cli \
 		sh
 
+run:
+	docker run --init -it --rm -u ${USER} -v "$$(pwd):/app" -w /app/tests \
+		ghcr.io/kuaukutsu/php:${PHP_VERSION}-cli \
+		php run.php
+
 psalm:
 	docker run --init -it --rm -v "$$(pwd):/app" -e XDG_CACHE_HOME=/tmp -w /app \
 		ghcr.io/kuaukutsu/php:${PHP_VERSION}-cli \
