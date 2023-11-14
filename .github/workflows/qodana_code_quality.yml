@@ -21,12 +21,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install composer dependencies
-        uses: ramsey/composer-install@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          dependency-versions: "highest"
+          php-version: ${{ matrix.php-version }}
+          coverage: none
         env:
+          fail-fast: true
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Composer install dependencies
+        uses: php-actions/composer@v6
+        with:
+          args: --ignore-platform-reqs
 
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2023.2
