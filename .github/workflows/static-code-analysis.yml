@@ -30,6 +30,8 @@ jobs:
 
       - name: Composer install dependencies
         uses: php-actions/composer@v6
+        with:
+          args: --ignore-platform-reqs
 
       - name: 'phpcs'
         run: vendor/bin/phpcs

@@ -30,6 +30,8 @@ jobs:
 
       - name: Composer install dependencies
         uses: php-actions/composer@v6
+        with:
+          args: --ignore-platform-reqs
 
       - name: PHPUnit
         uses: php-actions/phpunit@v3
@@ -38,5 +40,5 @@ jobs:
         with:
           bootstrap: vendor/autoload.php
           configuration: phpunit.xml.dist
-          php_extensions: xdebug
+          php_extensions: pcntl xdebug
           args: tests --coverage-clover ./coverage.xml

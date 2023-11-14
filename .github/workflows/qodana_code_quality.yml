@@ -33,6 +33,8 @@ jobs:
 
       - name: Composer install dependencies
         uses: php-actions/composer@v6
+        with:
+          args: --ignore-platform-reqs
 
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2023.2
