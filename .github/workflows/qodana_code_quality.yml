@@ -25,7 +25,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: pcntl
           coverage: none
         env:
           fail-fast: true
@@ -35,6 +34,7 @@ jobs:
         uses: ramsey/composer-install@v2
         with:
           dependency-versions: "highest"
+          composer-options: "--no-dev --ignore-platform-reqs --optimize-autoloader"
 
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2023.2
