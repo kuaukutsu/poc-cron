@@ -29,9 +29,9 @@ jobs:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Composer install dependencies
-        uses: ramsey/composer-install@v2
+        uses: php-actions/composer@v6
         with:
-          dependency-versions: "highest"
+          args: --ignore-platform-reqs
 
       - name: PHPUnit
         uses: php-actions/phpunit@v3
