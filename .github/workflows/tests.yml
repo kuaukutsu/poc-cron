@@ -27,8 +27,10 @@ jobs:
           fail-fast: true
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install composer and dependencies
-        uses: php-actions/composer@v6
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: "highest"
 
       - name: PHPUnit
         uses: php-actions/phpunit@v3
