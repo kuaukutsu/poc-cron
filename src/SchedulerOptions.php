@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace kuaukutsu\poc\cron;
 
-use const SIGHUP;
-use const SIGINT;
-use const SIGTERM;
-
 /**
  * @psalm-immutable
  */

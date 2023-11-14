@@ -34,3 +34,5 @@ exclude:
   - name: All
     paths:
       - composer.lock
+      - techstack.md
+      - techstack.yml
