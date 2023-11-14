@@ -37,3 +37,8 @@ jobs:
 
       - name: 'psalm'
         run: vendor/bin/psalm --output-format=github
+
+      - name: 'Qodana Scan'
+        uses: JetBrains/qodana-action@v2023.2
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
