@@ -97,7 +97,6 @@ final class SchedulerTimer
     /**
      * Schedule the event to run every N days.
      *
-     * @param int $days
      * @return $this
      */
     public static function everyNDays(int $days): self
